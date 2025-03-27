@@ -14,7 +14,10 @@ class AnyPat(BasePat):
 		self.may_be_none = may_be_none
 
 	def check(self, item, ctx: MatchContext) -> bool:
-		return item is not None or self.may_be_none
+		rv = item is not None or self.may_be_none
+		if rv and item is not None and self.bind_name is not None:
+			rv = ctx.bind_item(self.bind_name, item)
+		return rv
 
 	@property
 	def children(self):
