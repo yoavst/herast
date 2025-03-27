@@ -1,5 +1,6 @@
 import time
 import idaapi
+import traceback
 
 def reload_modules():
 	# order of requires (from imported to importers) is most likely important
@@ -67,9 +68,9 @@ class HerastPlugin(idaapi.plugin_t):
 			else:
 				matcher.match_cfunc(cfunc)
 
-		except Exception as e:
-			print(e)
-			raise e
+		except Exception:
+			print(traceback.format_exc())
+			raise
 
 		return 0
 

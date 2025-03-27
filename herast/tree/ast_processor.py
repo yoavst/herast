@@ -173,7 +173,7 @@ class ASTProcessor:
 			# higher than deleted instruction comes its parent block
 			parent_block, child_idx = item_path[-1]
 
-			children = get_children(parent_block)[child_idx]
+			children = get_children(parent_block)
 
 			# if removed instr is not last, then traverse next
 			if len(children) != child_idx:

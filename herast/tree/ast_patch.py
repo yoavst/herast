@@ -39,11 +39,22 @@ def remove_instr(item:idaapi.cinsn_t, ctx:ASTContext) -> bool:
 		except ValueError:
 			pass
 
+	rv = False
 	if len(removed_labels) > 0:
-		print(f"[!] failed to remove item {item.opname} with labels in it")
-		return False
+		if (
+			len(removed_labels) == 1
+			and item.label_num != -1
+			and utils.move_label_to_next_insn(parent.cinsn, item, ctx)
+		):
+			rv = True
+			ctx.is_modified = True
+		else:
+			print(f"[!] failed to remove item {item.opname} with labels in it")
+			return False
 
-	rv = utils.remove_instruction_from_ast(item, parent.cinsn)
+	if utils.remove_instruction_from_ast(item, parent.cinsn):
+		rv = True
+
 	if not rv:
 		print(f"[*] failed to remove item {item.opname} from tree at {hex(item.ea)}")
 

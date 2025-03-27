@@ -24,7 +24,7 @@ class ASTContext:
 			self.label2instr[l.label_num] = l
 
 		for g in gotos:
-			self.label2gotos[g.label_num] = g
+			self.label2gotos[g.cgoto.label_num].append(g)
 		return
 
 	@property

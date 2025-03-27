@@ -1,4 +1,5 @@
 from __future__ import annotations
+from herast.tree.ast_iteration import get_children
 import idaapi
 import idc
 import idautils
@@ -67,6 +68,33 @@ def remove_instruction_from_ast(unwanted_ins, parent):
 	except Exception as e:
 		print('Got an exception %s while trying to remove instruction from block' % e)
 		return False
+
+
+def move_label_to_next_insn(parent, cinsn, ctx):
+	assert type(cinsn) is idaapi.cinsn_t, "must be an instruction (cinsn_t)"
+
+	if cinsn.label_num == -1:
+		return False
+
+	children = get_children(parent)
+	for i, c in enumerate(children):
+		if c == cinsn:
+			if i + 1 >= len(children):
+				# Last instruction in parent, unsupported
+				return False
+			else:
+				next_insn = children[i + 1]
+				if next_insn.label_num != -1:
+					# Next instruction already has a label, move all gotos to the next instruction
+					for goto in ctx.label2gotos[cinsn.label_num]:
+						goto.cgoto.label_num = next_insn.label_num
+					cinsn.label_num = -1
+				else:
+					next_insn.label_num = cinsn.label_num
+					cinsn.label_num = -1
+				return True
+	return False
+
 
 def make_cblock(instructions):
 	block = idaapi.cblock_t()

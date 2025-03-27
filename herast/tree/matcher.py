@@ -1,4 +1,5 @@
 from __future__ import annotations
+import traceback
 
 import idaapi
 import idc
@@ -108,6 +109,7 @@ class Matcher:
 			return self._check_scheme(scheme, item, ast_ctx)
 		except Exception as e:
 			print('[!] Got an exception during scheme checking: %s' % e)
+			print(traceback.format_exc())
 			return None
 
 	def _check_scheme(self, scheme: Scheme, item: idaapi.citem_t, ast_ctx: ASTContext) -> ASTPatch|None:
