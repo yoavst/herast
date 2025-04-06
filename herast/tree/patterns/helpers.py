@@ -36,11 +36,9 @@ class StringPat(BasePat):
 
 	@BasePat.base_check
 	def check(self, item, ctx: MatchContext) -> bool:
-		if item.op == idaapi.cot_obj:
-			item.obj_ea
-			name = item.print1(None)
-			name = idaapi.tag_remove(name)
-			name = idaapi.str2user(name)
+		if item.op == idaapi.cot_obj and item.is_cstr():
+			# FIXME: is there a way to get the string from the object?
+			name = item.dstr()[1:-1]
 		elif item.op == idaapi.cot_str:
 			name = item.string
 		else:
