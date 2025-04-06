@@ -8,7 +8,7 @@ class ObjcRetainRemover(Scheme):
 		pattern of form:
 		objc_retain(y);
 		"""
-		pattern = CallPat(HelperPat("objc_retain"), VarPat(bind_name="src"))
+		pattern = CallPat(HelperPat("objc_retain"), AnyPat(may_be_none=False, bind_name="src"))
 		super().__init__(pattern)
 
 	def on_matched_item(self, item, ctx: MatchContext) -> ASTPatch | None:
