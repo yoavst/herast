@@ -1,4 +1,6 @@
 import idaapi
+import ida_bytes
+import ida_nalt
 
 from herast.tree.patterns.base_pattern import BasePat
 from herast.tree.match_context import MatchContext
@@ -37,8 +39,15 @@ class StringPat(BasePat):
 	@BasePat.base_check
 	def check(self, item, ctx: MatchContext) -> bool:
 		if item.op == idaapi.cot_obj and item.is_cstr():
-			# FIXME: is there a way to get the string from the object?
-			name = item.dstr()[1:-1]
+			ea = item.obj_ea
+			if ea == idaapi.BADADDR:
+				return False
+			try:
+				name = ida_bytes.get_strlit_contents(
+					ea, -1, ida_nalt.get_str_type(ea)
+				).decode()
+			except TypeError:
+				return False
 		elif item.op == idaapi.cot_str:
 			name = item.string
 		else:
